@@ -18,6 +18,13 @@ $(function(){
         comparator: function(a,b){
           if (a.get(this.sortParam) < b.get(this.sortParam)) return this.sortMode
           if (a.get(this.sortParam) > b.get(this.sortParam)) return -1*this.sortMode
+        },
+
+        update: function(objects){
+            var collection = this
+            _.each(objects, function(obj){
+                _.wherecollection.models
+            })
         }
     });
 
@@ -54,8 +61,12 @@ $(function(){
 
             socket.onmessage = function(response){
                 var parsed_data = JSON.parse(response.data)
-                if (parsed_data.status == "CONNECTED") {view.getRatings()}
-                console.log(parsed_data)
+                if (parsed_data.status == "CONNECTED") {
+                    view.getRatings()
+                }
+                else {
+                    view.collection.update(parsed_data.updates)
+                }
             };
         },
 
