@@ -19,11 +19,16 @@ $(function(){
           if (a.get(this.sortParam) < b.get(this.sortParam)) return this.sortMode
           if (a.get(this.sortParam) > b.get(this.sortParam)) return -1*this.sortMode
         },
+        initialize: function() {
+            this.on('change:points', function() { this.sort() }, this);
+        },
+
 
         update: function(objects){
             var collection = this
             _.each(objects, function(obj){
-                _.wherecollection.models
+                var cur_model = _.findWhere(collection.models, {id: obj['id']});
+                cur_model.set({points: obj["points"]});
             })
         }
     });
@@ -35,6 +40,7 @@ $(function(){
 
         initialize: function(){
             this.initSocket();
+            this.collection.on('all', function() { this.render() }, this);
         },
 
         modelChanged: function(){
@@ -45,6 +51,7 @@ $(function(){
             var view = this;
             var url = "http://rating.smartjs.academy/rating";
             $.get(url).success().done(function(response){
+                view.current_version = response.version
                 view.collection.add(response.records);
                 console.log(view.collection);
                 view.render()
@@ -65,19 +72,19 @@ $(function(){
                     view.getRatings()
                 }
                 else {
-                    view.collection.update(parsed_data.updates)
+                    if (view.current_version == parsed_data.fromVersion ) {
+                        view.current_version = parsed_data.toVersion
+                        view.collection.update(parsed_data.updates)
+                    }else{
+                    console.log("Missed version")
+                }
                 }
             };
         },
 
         render: function(){
-            console.log(this.collection.models);
-            var view = this;
-            var template = this.template;
-            this.collection.each(function(element){
-                var temp = template(element.attributes);
-                view.$el.append(temp);
-            })
+            this.$el.html(this.template({ratings: this.collection.toJSON()}))
+            return this
         }
     });
 

@@ -26,11 +26,13 @@
     </div>
 
 <script type="text/template" id="score_tr">
-    <tr>
-        <td><%= id %></td>
-        <td><%= name %></td>
-        <td><%= points %></td>
-    </tr>
+    <% _.each(ratings, function(rating){ %>
+        <tr>
+            <td><%= rating.id %></td>
+            <td><%= rating.name %></td>
+            <td><%= rating.points %></td>
+        </tr>
+    <% }) %>
 </script>
 </body>
 </html>
